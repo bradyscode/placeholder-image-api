@@ -5,22 +5,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
-using earthPornPictures.Interfaces;
 
-namespace earthPornPictures.Controllers
+
+namespace returnScaledImages.Controllers
 {
     
-    public class earthPornImageController : Controller
+    public class returnImageController : Controller
     {
         
-        [HttpPost("/images")]
-        public ActionResult ReturnRedditEarthPornImage()
+        [HttpPost("/images/{width}/{height}")]
+        public ActionResult ReturnScaledImage(int width, int height)
         {
             var ms = new MemoryStream();
             var filePath = "k2a53gzxwpz71.jpg";
             var image = Image.FromFile(filePath);
             
-            image = image.resizeImage(new Size(100, 100));
+            image = image.resizeImage(new Size(width, height));
 
             byte[] bytes = (byte[])(new ImageConverter()).ConvertTo(image, typeof(byte[]));
 
