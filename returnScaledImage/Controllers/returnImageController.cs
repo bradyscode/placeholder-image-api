@@ -16,7 +16,6 @@ namespace returnScaledImages.Controllers
         [HttpPost("/images/{width}/{height}")]
         public ActionResult ReturnScaledImage(int width, int height)
         {
-            var ms = new MemoryStream();
             var filePath = "k2a53gzxwpz71.jpg";
             var image = Image.FromFile(filePath);
             
