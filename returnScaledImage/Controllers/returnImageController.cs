@@ -21,8 +21,6 @@ namespace returnScaledImages.Controllers
             byte [] data = webClient.DownloadData(url);
             MemoryStream memoryStream = new MemoryStream(data); //These lines are needed for URL input
 
-            var filePath = url;
-
             //var image = Image.FromFile(filePath); //for picture in files
 
             var image = Image.FromStream(memoryStream);
@@ -40,6 +38,24 @@ namespace returnScaledImages.Controllers
                 return BadRequest("Image must be perfect squares! i.e. The width and height divided by the original size must have a remainder of 0");
             }
          
+        }
+
+        //Adding an endpoint that does not care about aspect ratio
+        [HttpPost("/noaspectratio/")]
+        public ActionResult ReturnScaledImageNoAspectRatio(int width, int height)
+        {
+            string url = "https://picsum.photos/1920/1080";
+            var webClient = new WebClient();
+            byte[] data = webClient.DownloadData(url);
+            MemoryStream memoryStream = new MemoryStream(data);
+
+            var image = Image.FromStream(memoryStream);
+
+            image = new Bitmap(image, new Size(width, height));
+
+            byte[] bytes = (byte[])(new ImageConverter()).ConvertTo(image, typeof (byte[]));
+
+            return File(bytes, "image/jpeg", "resizedImageNAR.jpg");
         }
 
     }
