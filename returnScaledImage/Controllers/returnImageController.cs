@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
-
+using System.Net;
 
 namespace returnScaledImages.Controllers
 {
@@ -16,14 +16,30 @@ namespace returnScaledImages.Controllers
         [HttpPost("/images/{width}/{height}")]
         public ActionResult ReturnScaledImage(int width, int height)
         {
-            var filePath = "k2a53gzxwpz71.jpg";
-            var image = Image.FromFile(filePath);
-            
-            image = image.resizeImage(new Size(width, height));
+            string url = "https://picsum.photos/2000/2000";
+            var webClient = new WebClient();
+            byte [] data = webClient.DownloadData(url);
+            MemoryStream memoryStream = new MemoryStream(data); //These lines are needed for URL input
 
-            byte[] bytes = (byte[])(new ImageConverter()).ConvertTo(image, typeof(byte[]));
+            var filePath = url;
 
-            return File(bytes, "image/jpeg", "resizedImage.jpg");            
+            //var image = Image.FromFile(filePath); //for picture in files
+
+            var image = Image.FromStream(memoryStream);
+
+            if (2000 % width == 0 && 2000 % height ==0)
+            {
+                image = image.resizeImage(new Size(width, height));
+
+                byte[] bytes = (byte[])(new ImageConverter()).ConvertTo(image, typeof(byte[]));
+
+                return File(bytes, "image/jpeg", "resizedImage.jpg");
+            }
+            else
+            {
+                return BadRequest("Image must be perfect squares! i.e. The width and height divided by the original size must have a remainder of 0");
+            }
+         
         }
 
     }
