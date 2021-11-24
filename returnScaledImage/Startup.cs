@@ -7,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using returnScaledImage.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace returnScaledImages
@@ -26,7 +28,9 @@ namespace returnScaledImages
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddScoped<IImageRetreiver, ImageRetreiver>();
+            services.AddLazyCache();
+            services.AddHttpClient();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -47,7 +51,7 @@ namespace returnScaledImages
             }
 
             app.UseHttpsRedirection();
-
+            
             app.UseRouting();
 
             app.UseAuthorization();

@@ -6,13 +6,28 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
 using System.Net;
+using System.Drawing.Imaging;
+using LazyCache;
+using System.Net.Http;
+using returnScaledImage.Interfaces;
 
 namespace returnScaledImages.Controllers
 {
     
     public class returnImageController : Controller
     {
-        
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IAppCache _cache;
+        private readonly IImageRetreiver _imageRetriever;
+
+        public returnImageController(IHttpClientFactory httpClientFactory, IAppCache cache, IImageRetreiver imageRetriever)
+        {
+            _httpClientFactory = httpClientFactory;
+            _cache = cache;
+            _imageRetriever = imageRetriever;
+        }
+
+
         [HttpPost("/images/{width}/{height}")]
         public ActionResult ReturnScaledImage(int width, int height)
         {
@@ -41,22 +56,16 @@ namespace returnScaledImages.Controllers
         }
 
         //Adding an endpoint that does not care about aspect ratio
-        [HttpPost("/noaspectratio/")]
-        public ActionResult ReturnScaledImageNoAspectRatio(int width, int height)
+        [HttpPost("/noaspectratio/{width}/{height}")]
+        public async Task<ActionResult> ReturnScaledImageNoAspectRatio(int width, int height, int initialWidth, int initialHeight)
         {
-            string url = "https://picsum.photos/1920/1080";
-            var webClient = new WebClient();
-            byte[] data = webClient.DownloadData(url);
-            MemoryStream memoryStream = new MemoryStream(data);
+            Func<Task<Image>> imageGetter = async () => await _imageRetriever.GetImageAsync(width, height, initialWidth, initialHeight);
+            var image = await _cache.GetOrAdd($"{width}:{height}", imageGetter);           
 
-            var image = Image.FromStream(memoryStream);
-
-            image = new Bitmap(image, new Size(width, height));
-
-            byte[] bytes = (byte[])(new ImageConverter()).ConvertTo(image, typeof (byte[]));
-
-            return File(bytes, "image/jpeg", "resizedImageNAR.jpg");
+            return File(image.GetBytes(), "image/jpeg", "resizedImageNAR");
         }
+
+
 
     }
     public static class imageExtensions
@@ -87,6 +96,14 @@ namespace returnScaledImages.Controllers
             g.DrawImage(img, 0, 0, destWidth, destHeight);
 
             return (System.Drawing.Image)b;
+        }
+
+        public static byte[] GetBytes(this Image image)
+        {
+            var imageStream = new MemoryStream();
+            image.Save(imageStream, ImageFormat.Jpeg);
+
+            return imageStream.ToArray();
         }
     }
 }
