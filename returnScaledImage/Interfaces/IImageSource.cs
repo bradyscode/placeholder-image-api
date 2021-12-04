@@ -7,6 +7,7 @@ namespace returnScaledImage.Interfaces
 {
     public interface IImageSource
     {
-        Task<List<Image>> GetImages();
+        public string Type { get; }
+        Task<List<Image>> GetImages(int initialWidth, int initialHeight);
     }
 }

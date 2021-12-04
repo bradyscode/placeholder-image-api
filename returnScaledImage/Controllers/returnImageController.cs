@@ -28,7 +28,7 @@ namespace returnScaledImages.Controllers
         }
 
 
-        [HttpPost("/images/{width}/{height}")]
+        [HttpPost("/{source}/{width}/{height}")]
         public ActionResult ReturnScaledImage(int width, int height)
         {
             string url = "https://picsum.photos/2000/2000";
@@ -56,13 +56,25 @@ namespace returnScaledImages.Controllers
         }
 
         //Adding an endpoint that does not care about aspect ratio
-        [HttpPost("/noaspectratio/{width}/{height}")]
-        public async Task<ActionResult> ReturnScaledImageNoAspectRatio(int width, int height, int initialWidth, int initialHeight)
+        [HttpPost("/{source}/{width}/{height}/noaspectratio")]
+        public async Task<ActionResult> ReturnScaledImageNoAspectRatio(int width, int height, int initialWidth, int initialHeight, string source)
         {
-            Func<Task<Image>> imageGetter = async () => await _imageRetriever.GetImageAsync(width, height, initialWidth, initialHeight);
-            var image = await _cache.GetOrAdd($"{width}:{height}", imageGetter);           
+            try
+            {
+                Func<Task<Image>> imageGetter = async () => await _imageRetriever.GetImageAsync(width, height, initialWidth, initialHeight, source);
+                var image = await _cache.GetOrAdd($"{source}:{width}:{height}", imageGetter);
 
-            return File(image.GetBytes(), "image/jpeg", "resizedImageNAR");
+                return File(image.GetBytes(), "image/jpeg", "resizedImageNAR");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest("Invalid image source");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Cannot connect to image source. Please try another image source.");
+            }
+
         }
 
 

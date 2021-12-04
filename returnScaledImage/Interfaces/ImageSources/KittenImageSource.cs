@@ -6,27 +6,25 @@ using System.Threading.Tasks;
 
 namespace returnScaledImage.Interfaces.ImageSources
 {
-    public class NatureImageSource : IImageSource
+    public class KittenImageSource : IImageSource
     {
-        public string Type => "nature";
+        public string Type { get; } = "kitten";
+
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public NatureImageSource(IHttpClientFactory httpClientFactory)
+        public KittenImageSource(IHttpClientFactory httpclientfactory)
         {
-            _httpClientFactory = httpClientFactory;
+            _httpClientFactory = httpclientfactory;
         }
-
-        
-
         public async Task<List<Image>> GetImages(int initialWidth, int initialHeight)
         {
             var client = _httpClientFactory.CreateClient();
-            var stream = await client.GetStreamAsync($"https://picsum.photos/{initialWidth}/{initialHeight}");
+            var stream = await client.GetStreamAsync($"https://placekitten.com/{initialWidth}/{initialHeight}");
             var image = Image.FromStream(stream);
 
             image = new Bitmap(image);
-            Console.WriteLine("Getting image from nature retreiver");
-            return new List<Image> {image};
+            Console.WriteLine("Getting image from kitten image source");
+            return new List<Image> { image };
         }
     }
 }
