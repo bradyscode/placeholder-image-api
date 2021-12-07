@@ -5,26 +5,79 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
-
+using System.Net;
+using System.Drawing.Imaging;
+using LazyCache;
+using System.Net.Http;
+using returnScaledImage.Interfaces;
 
 namespace returnScaledImages.Controllers
 {
     
     public class returnImageController : Controller
     {
-        
-        [HttpPost("/images/{width}/{height}")]
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IAppCache _cache;
+        private readonly IImageRetreiver _imageRetriever;
+
+        public returnImageController(IHttpClientFactory httpClientFactory, IAppCache cache, IImageRetreiver imageRetriever)
+        {
+            _httpClientFactory = httpClientFactory;
+            _cache = cache;
+            _imageRetriever = imageRetriever;
+        }
+
+
+        [HttpPost("/{source}/{width}/{height}")]
         public ActionResult ReturnScaledImage(int width, int height)
         {
-            var filePath = "k2a53gzxwpz71.jpg";
-            var image = Image.FromFile(filePath);
-            
-            image = image.resizeImage(new Size(width, height));
+            string url = "https://picsum.photos/2000/2000";
+            var webClient = new WebClient();
+            byte [] data = webClient.DownloadData(url);
+            MemoryStream memoryStream = new MemoryStream(data); //These lines are needed for URL input
 
-            byte[] bytes = (byte[])(new ImageConverter()).ConvertTo(image, typeof(byte[]));
+            //var image = Image.FromFile(filePath); //for picture in files
 
-            return File(bytes, "image/jpeg", "resizedImage.jpg");            
+            var image = Image.FromStream(memoryStream);
+
+            if (2000 % width == 0 && 2000 % height ==0)
+            {
+                image = image.resizeImage(new Size(width, height));
+
+                byte[] bytes = (byte[])(new ImageConverter()).ConvertTo(image, typeof(byte[]));
+
+                return File(bytes, "image/jpeg", "resizedImage.jpg");
+            }
+            else
+            {
+                return BadRequest("Image must be perfect squares! i.e. The width and height divided by the original size must have a remainder of 0");
+            }
+         
         }
+
+        //Adding an endpoint that does not care about aspect ratio
+        [HttpPost("/{source}/{width}/{height}/noaspectratio")]
+        public async Task<ActionResult> ReturnScaledImageNoAspectRatio(int width, int height, int initialWidth, int initialHeight, string source)
+        {
+            try
+            {
+                Func<Task<Image>> imageGetter = async () => await _imageRetriever.GetImageAsync(width, height, initialWidth, initialHeight, source);
+                var image = await _cache.GetOrAdd($"{source}:{width}:{height}", imageGetter);
+
+                return File(image.GetBytes(), "image/jpeg", "resizedImageNAR");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest("Invalid image source");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Cannot connect to image source. Please try another image source.");
+            }
+
+        }
+
+
 
     }
     public static class imageExtensions
@@ -55,6 +108,14 @@ namespace returnScaledImages.Controllers
             g.DrawImage(img, 0, 0, destWidth, destHeight);
 
             return (System.Drawing.Image)b;
+        }
+
+        public static byte[] GetBytes(this Image image)
+        {
+            var imageStream = new MemoryStream();
+            image.Save(imageStream, ImageFormat.Jpeg);
+
+            return imageStream.ToArray();
         }
     }
 }
