@@ -11,7 +11,9 @@ Add cacheing to store the first n images in a dictionary and allow users to pull
 ```
 
 #SOURCES
+
 ##Nature -
 Nature source will return pictures of nature to the user.
+
 #Kitten - 
 Kitten source will return pictures of kitten(s) to the user.
