@@ -23,10 +23,10 @@ namespace returnScaledImage.Interfaces
         public async Task<Image> GetImageAsync(int width, int height, int initialWidth, int initialHeight, string source)
         {
             Random rnd = new Random();
-            IImageSource imageSource = _imageSources.Single(x => x.Type.Equals(source));
+            IImageSource imageSource = _imageSources.Single(x => x.Type.Equals(source.ToLower()));
             var images = await imageSource.GetImages(initialWidth, initialHeight);
-            var image = images[rnd.Next(0,images.Count)];
-            image = new Bitmap(image, new Size(width,height));
+            var image = images[3];
+            image = new Bitmap(image, new Size(width, height));
             return image;
         }
     }

@@ -35,8 +35,12 @@ namespace returnScaledImage.Interfaces.ImageSources
 
                 images.Add(image);
                 _cache.Add($"{initialWidth},{initialHeight}", image);
+
+                initialHeight += 100;
+                initialWidth += 100;
             }
             Console.WriteLine("Getting image from nature retreiver");
+            Console.WriteLine(images.Count);
             return images;
         }
     }
