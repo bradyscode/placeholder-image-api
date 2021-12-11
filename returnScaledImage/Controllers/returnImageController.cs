@@ -62,7 +62,7 @@ namespace returnScaledImages.Controllers
             try
             {
                 Func<Task<Image>> imageGetter = async () => await _imageRetriever.GetImageAsync(width, height, initialWidth, initialHeight, source);
-                var image = await _cache.GetOrAdd($"{source}:{width}:{height}", imageGetter);
+                var image = await _cache.GetOrAdd($"{source}:{initialHeight}:{initialWidth}", imageGetter);
                 
 
                 return File(image.GetBytes(), "image/jpeg", "resizedImageNAR");
