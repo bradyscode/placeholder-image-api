@@ -1,4 +1,6 @@
 ﻿using LazyCache;
+using Microsoft.Extensions.Options;
+using returnScaledImage.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,28 +15,27 @@ namespace returnScaledImage.Interfaces.ImageSources
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAppCache _cache;
+        private readonly ImageSizeOptions _imageSizeOptions;
 
-        public KittenImageSource(IHttpClientFactory httpclientfactory, IAppCache cache)
+        public KittenImageSource(IHttpClientFactory httpclientfactory, IAppCache cache, IOptions<ImageSizeOptions> imageSizeOptions)
         {
             _httpClientFactory = httpclientfactory;
             _cache = cache;
+            _imageSizeOptions = imageSizeOptions.Value;
         }
-        public async Task<List<Image>> GetImages(int initialWidth, int initialHeight)
+        public async Task<List<Image>> GetImages()
         {
             List<Image> images = new List<Image>();
             Image image;
-            for (int i = 1; i < 10; i++)
+            foreach (var imageSize in _imageSizeOptions.Sizes)
             {
                 var client = _httpClientFactory.CreateClient();
-                var stream = await client.GetStreamAsync($"https://placekitten.com/{initialWidth}/{initialHeight}");
+                var stream = await client.GetStreamAsync($"https://placekitten.com/{imageSize.Width}/{imageSize.Height}");
                 image = Image.FromStream(stream);
-                client.Dispose();
                 image = new Bitmap(image);
-
                 images.Add(image);
-                _cache.Add($"{initialWidth},{initialHeight}", image);
             }
-            Console.WriteLine("Getting image from kitten retreiver");
+            Console.WriteLine("Getting image from nature retreiver");
             return images;
         }
     }

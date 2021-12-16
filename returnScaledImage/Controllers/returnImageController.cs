@@ -56,13 +56,12 @@ namespace returnScaledImages.Controllers
         }
 
         //Adding an endpoint that does not care about aspect ratio
-        [HttpPost("/{source}/{width}/{height}/noaspectratio")]
+        [HttpPost("/{source}/noaspectratio")]
         public async Task<ActionResult> ReturnScaledImageNoAspectRatio(int width, int height, int initialWidth, int initialHeight, string source)
         {
             try
             {
-                Func<Task<Image>> imageGetter = async () => await _imageRetriever.GetImageAsync(width, height, initialWidth, initialHeight, source);
-                var image = await _cache.GetOrAdd($"{source}:{width}:{height}", imageGetter);
+                var image = await _imageRetriever.GetImageAsync(width, height, initialWidth, initialHeight, source.ToLower());
 
                 return File(image.GetBytes(), "image/jpeg", "resizedImageNAR");
             }
