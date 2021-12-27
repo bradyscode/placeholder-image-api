@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using returnScaledImage.Models;
 
 namespace returnScaledImages
 {
@@ -31,7 +32,7 @@ namespace returnScaledImages
         {
             services.AddScoped<IImageSource, NatureImageSource>();
             services.AddScoped<IImageSource, KittenImageSource>();
-
+            services.AddOptions<ImageSizeOptions>().Bind(Configuration.GetSection("ImageSizeOptions"));
             services.AddScoped<IImageRetreiver, ImageRetreiver>();
             services.AddLazyCache();
             services.AddHttpClient();
