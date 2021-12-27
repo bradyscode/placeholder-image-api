@@ -37,31 +37,26 @@ namespace returnScaledImage.Interfaces
 
             if (initialWidth > 0 && initialWidth > 0)
             {
-                var userAspectRatio = GetAspectRatio(width, height);
                 foreach (var imageSize in images)
                 {
                     aspectRatios.Add(GetAspectRatio(imageSize.Width, imageSize.Height));
                 }
 
-                decimal closest;
             }
 
-
+            decimal closest = 999;
             //Working on algorithm to determine closest aspect ratio
-            //for (int i = 0; i < aspectRatios.Count; i++)
-            //{
-            //    decimal value = 0;
-            //    closest = aspectRatios[i];
-            //    var difference = Math.Abs(aspectRatios[i] - userAspectRatio);
+            for (int i = 0; i < aspectRatios.Count; i++)
+            {
+                var targetRatio = GetAspectRatio(width, height);
+                var aRatio = aspectRatios[i];
 
-            //    if (difference < value)
-            //    {
-            //        value = difference;
-            //        closest = aspectRatios[i];
-            //    }
-            //    Console.WriteLine(closest);
+                if ((targetRatio - aRatio) < closest)
+                {
+                    closest = aRatio;
+                }
 
-            //}
+            }
 
 
             var image = images[rnd.Next(0,images.Count)];
