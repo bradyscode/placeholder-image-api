@@ -36,6 +36,7 @@ namespace returnScaledImage.Interfaces.ImageSources
                 images.Add(image);
             }
             Console.WriteLine("Getting image from nature retreiver");
+
             return images;
         }
     }
