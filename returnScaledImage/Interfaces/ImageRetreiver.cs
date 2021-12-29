@@ -35,7 +35,7 @@ namespace returnScaledImage.Interfaces
             IImageSource imageSource = _imageSources.Single(x => x.Type.Equals(source));
             var images = await _cache.GetOrAdd($"{source}", () => imageSource.GetImages());
 
-            if (initialWidth > 0 && initialWidth > 0)
+            if (width > 0 && height > 0)
             {
                 foreach (var imageSize in images)
                 {
@@ -45,15 +45,15 @@ namespace returnScaledImage.Interfaces
             }
 
             decimal closest = 999;
+            var targetRatio = GetAspectRatio(width, height);
             //Working on algorithm to determine closest aspect ratio
             for (int i = 0; i < aspectRatios.Count; i++)
             {
-                var targetRatio = GetAspectRatio(width, height);
-                var aRatio = aspectRatios[i];
+                var aspectRatio = aspectRatios[i];
 
-                if ((targetRatio - aRatio) < closest)
+                if ((targetRatio - aspectRatio) < closest)
                 {
-                    closest = aRatio;
+                    closest = aspectRatio;
                 }
 
             }
@@ -71,7 +71,7 @@ namespace returnScaledImage.Interfaces
             return image;
         }
 
-        private static decimal GetAspectRatio(int width, int height)
+        private static decimal GetAspectRatio(decimal width, decimal height)
         {
             return height / width;
         }
