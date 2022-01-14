@@ -28,33 +28,6 @@ namespace returnScaledImages.Controllers
         }
 
 
-        [HttpPost("/{source}/{width}/{height}")]
-        public ActionResult ReturnScaledImage(int width, int height)
-        {
-            string url = "https://picsum.photos/2000/2000";
-            var webClient = new WebClient();
-            byte [] data = webClient.DownloadData(url);
-            MemoryStream memoryStream = new MemoryStream(data); //These lines are needed for URL input
-
-            //var image = Image.FromFile(filePath); //for picture in files
-
-            var image = Image.FromStream(memoryStream);
-
-            if (2000 % width == 0 && 2000 % height ==0)
-            {
-                image = image.resizeImage(new Size(width, height));
-
-                byte[] bytes = (byte[])(new ImageConverter()).ConvertTo(image, typeof(byte[]));
-
-                return File(bytes, "image/jpeg", "resizedImage.jpg");
-            }
-            else
-            {
-                return BadRequest("Image must be perfect squares! i.e. The width and height divided by the original size must have a remainder of 0");
-            }
-         
-        }
-
         //Adding an endpoint that does not care about aspect ratio
         [HttpPost("/{source}/noaspectratio")]
         public async Task<ActionResult> ReturnScaledImageNoAspectRatio(int width, int height, int initialWidth, int initialHeight, string source)
