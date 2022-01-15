@@ -71,7 +71,7 @@ namespace returnScaledImages.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Cannot connect to image source. Please try another image source.");
+                return StatusCode(500, ex);
             }
 
         }
