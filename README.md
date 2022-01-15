@@ -2,6 +2,11 @@
 This api takes any size image and will create a placeholder on a project when certain assets are missing
 
 # Getting started -
+## V2 -
+Added Azure deployment 
+```bash
+https://image-placeholder-api.azurewebsites.net/nature/noaspectratio
+```
 ## V1 - 
 The user can input any size image they want and be returned an image that is that size from the endpoint of /noaspectratio/{width}/{height}
 
