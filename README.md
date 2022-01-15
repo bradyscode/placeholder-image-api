@@ -7,13 +7,13 @@ Added Azure deployment
 ```bash
 https://image-placeholder-api.azurewebsites.net/nature/noaspectratio
 ```
+- Added a new endpoint that has option parameters of width, height, initialHeight, and initialWidth.
+- Added IOptions pattern to cache the top n most common image sizes
 ## V1 - 
 The user can input any size image they want and be returned an image that is that size from the endpoint of /noaspectratio/{width}/{height}
 
 # TODO
-```
-Add cacheing to store the first n images in a dictionary and allow users to pull certain aspect ratios of pictures into projects
-```
+- Finish algorithm to find image that is closest to desiered aspect ratio based on passed in width and height
 
 # SOURCES
 
