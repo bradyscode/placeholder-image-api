@@ -71,7 +71,7 @@ namespace returnScaledImages.Controllers
             }
             catch (Exception ex)
             {
-                throw ex.StackTrace;
+                throw ex;
             }
 
         }
