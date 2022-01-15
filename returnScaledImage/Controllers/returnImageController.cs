@@ -71,7 +71,7 @@ namespace returnScaledImages.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex);
+                throw ex.StackTrace;
             }
 
         }
