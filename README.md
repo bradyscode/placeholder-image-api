@@ -13,7 +13,7 @@ https://image-placeholder-api.azurewebsites.net/nature/noaspectratio
 The user can input any size image they want and be returned an image that is that size from the endpoint of /noaspectratio/{width}/{height}
 
 # TODO
-- Finish algorithm to find image that is closest to desiered aspect ratio based on passed in width and height
+- Finish algorithm that gets image for client closest to their desired aspect ratio
 
 # SOURCES
 
