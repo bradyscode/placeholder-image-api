@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using LazyCache;
 using System.Net.Http;
 using returnScaledImage.Interfaces;
+using Serilog;
 
 namespace returnScaledImages.Controllers
 {
@@ -67,11 +68,13 @@ namespace returnScaledImages.Controllers
             }
             catch (InvalidOperationException ex)
             {
+                Log.Error(ex.Message.ToString());
                 return BadRequest("Invalid image source");
             }
             catch (Exception ex)
             {
-                throw ex;
+                Log.Error(ex.Message.ToString());
+                throw;
             }
 
         }
