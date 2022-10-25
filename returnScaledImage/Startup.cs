@@ -15,6 +15,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using returnScaledImage.Models;
+using returnScaledImage.Interfaces.Icon;
+using Serilog;
+using Serilog.Formatting.Json;
+using Serilog.Events;
 
 namespace returnScaledImages
 {
@@ -23,6 +27,14 @@ namespace returnScaledImages
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(new JsonFormatter(),
+                          "logs.json",
+                          restrictedToMinimumLevel: LogEventLevel.Warning)
+            .WriteTo.File("LogFile.logs",
+                          rollingInterval: RollingInterval.Day)
+            .MinimumLevel.Debug()
+            .CreateLogger();
         }
 
         public IConfiguration Configuration { get; }
@@ -34,6 +46,7 @@ namespace returnScaledImages
             services.AddScoped<IImageSource, KittenImageSource>();
             services.AddOptions<ImageSizeOptions>().Bind(Configuration.GetSection("ImageSizeOptions"));
             services.AddScoped<IImageRetreiver, ImageRetreiver>();
+            services.AddScoped<IIconRetreiver, IconRetreiver>();
             services.AddLazyCache();
             services.AddHttpClient();
             services.AddControllers();
