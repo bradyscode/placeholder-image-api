@@ -19,6 +19,7 @@ using returnScaledImage.Interfaces.Icon;
 using Serilog;
 using Serilog.Formatting.Json;
 using Serilog.Events;
+using returnScaledImage.Middleware;
 
 namespace returnScaledImages
 {
@@ -73,7 +74,7 @@ namespace returnScaledImages
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseMiddleware<GlobalExceptionHandler>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
